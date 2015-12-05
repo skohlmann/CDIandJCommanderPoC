@@ -28,12 +28,12 @@ The class with the `main` method must contain `@Produces` annotated method which
 	    }
     }
 
-The `main`method contains only the initialization of the Weld-SE container and runs the application. 
+The `main` method contains only the initialization of the Weld-SE container and runs the application. 
 
 	public static final void main(final String... args) {        
         final Weld weld = new Weld();
         try (final WeldContainer container = weld.initialize()) {
-            result = container.select(Main.class).get().run(args);
+            result = container.select(Application.class).get().run(args);
         }
     }
     
@@ -42,7 +42,7 @@ The `main`method contains only the initialization of the Weld-SE container and r
     }
 
 ### `MainConfiguration`
-The `MainConfiguration`class is a straight forward data holder. The configuration field are annotated with `@Parameter`.
+The `MainConfiguration` class is a straight forward data holder. The configuration field are annotated with `@Parameter`.
 
 	public class MainConfiguration {
     
@@ -58,10 +58,10 @@ Sub commands implements a common command API like the following:
 	public interface Command {
 		String execute();
 	}
-Implementations of the command must have at least the `@Parameters` type annotation. They may have sub command specific parameters and the parameter data of the main command.
+Implementations of the command must have at least the `@Parameters` type annotation with the `names` attribute given. They may have sub command specific parameters and the parameter data of the main command.
 
 	@Parameters(commandDescription = "Simple sub command", commandNames = "subcmd")
-	public class FirstCommand implements Command {
+	public class SubCommand implements Command {
 
 	    @Inject @Config
 	    private MainConfiguration mainConfig;
@@ -74,14 +74,14 @@ Implementations of the command must have at least the `@Parameters` type annotat
 		    return this.mainConfig.getMain() + this.parameter;
 	    }
 	}
-After the CDI initialization all sub command with the injection point for the `MainConfiguration`contains now the static instance from the main class. But the configuration is yet not initialized. So having a method with `@PostConstruct` annotated, using the main configuration will not work. Also using the sub command specific parameters in such a method will not work. 
+After the CDI initialization all sub command with the injection point for the `MainConfiguration` contains now the static instance from the main class. But the configuration is yet not initialized. So having a method with `@PostConstruct` annotated, using the main configuration will not work. Also using the sub command specific parameters in such a method will not work. 
 
 The JCommander initialization follows in the next step. But before, we must enhance the `Application` class with the CDI plugin API.
 
 ###`Instance<Command>`
 The Application class gets an injectable `Ìnstance<Command>` field. This field will be filled by CDI after the Weld initialization with all available `Command` implementations.
 
-	public class Main {
+	public class Application {
     
 		@Inject
 	    private Instance<Command> commands;	    
@@ -93,7 +93,7 @@ The Application class gets an injectable `Ìnstance<Command>` field. This field 
 
 
 ##JCommander initialization
-The `run`method initialize the JCommander with the following steps:
+The `run` method initialize the JCommander with the following steps:
 
 1. Create a new JCommander instance with the static `MAIN_CONFIG`: `JCommander jc = new JCommander(MAIN_CONFIG);`
 2. Add all instances of `private Instance<Command> commands` to the JCommander instance: `this.commands.forEach(cmd -> jc.addCommand(cmd));`
@@ -117,7 +117,7 @@ The last step is now to get the parsed sub command name an fetch the sub command
     }
 
 #Testing
-Testing ist straight forward:
+Testing is straight forward:
 
     @Test
     public void test_sub_command_execution() {
