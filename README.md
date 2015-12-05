@@ -9,6 +9,7 @@ An example for such command system is `git`.
 
 **Example**
 > git -c author=sascha.kohlmann@example.com commit -am "a commit"
+
 #Implementation
 ##The main command configuration
 The class with the `main` method must contain `@Produces` annotated method which returns a `static` variable with the only `MainConfiguration` instance.
