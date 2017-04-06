@@ -9,10 +9,13 @@ This means, a lot of sub commands with different parameters can be executed by a
 An example for such command system is `git`.
 
 **Example**
+
 > git -c author=sascha.kohlmann@example.com commit -am "a commit"
 
-#Implementation
-##The main command configuration
+# Implementation
+
+## The main command configuration
+
 The class with the `main` method must contain `@Produces` annotated method which returns a `static` variable with the only `MainConfiguration` instance.
 
 	public class Application {
@@ -42,7 +45,8 @@ The `main` method contains only the initialization of the Weld-SE container and 
 	    // the application
     }
 
-### `MainConfiguration`
+### MainConfiguration
+
 The `MainConfiguration` class is a straight forward data holder. The configuration field are annotated with `@Parameter`.
 
 	public class MainConfiguration {
@@ -53,7 +57,8 @@ The `MainConfiguration` class is a straight forward data holder. The configurati
 	    public String getMain() { return main; }
 	}
 
-##The sub commands
+## The sub commands
+
 Sub commands implements a common command API like the following:
 
 	public interface Command {
@@ -79,7 +84,8 @@ After the CDI initialization all sub command with the injection point for the `M
 
 The JCommander initialization follows in the next step. But before, we must enhance the `Application` class with the CDI plugin API.
 
-###`Instance<Command>`
+### `Instance<Command>`
+
 The Application class gets an injectable `Ìnstance<Command>` field. This field will be filled by CDI after the Weld initialization with all available `Command` implementations.
 
 	public class Application {
@@ -93,7 +99,8 @@ The Application class gets an injectable `Ìnstance<Command>` field. This field 
     }
 
 
-##JCommander initialization
+## JCommander initialization
+
 The `run` method initialize the JCommander with the following steps:
 
 1. Create a new JCommander instance with the static `MAIN_CONFIG`: `JCommander jc = new JCommander(MAIN_CONFIG);`
@@ -105,7 +112,8 @@ Afterwards, parse the command line arguments with the JCommander instance.
 
 That's it. 
 
-##Execute the sub command
+## Execute the sub command
+
 The last step is now to get the parsed sub command name an fetch the sub command implementation from JCommander. Then call the `execute()` method.
 
     final String parsedCommand = jc.getParsedCommand();
@@ -117,7 +125,8 @@ The last step is now to get the parsed sub command name an fetch the sub command
         }
     }
 
-#Testing
+# Testing
+
 Testing is straight forward:
 
     @Test
@@ -126,5 +135,6 @@ Testing is straight forward:
         assertThat(Application.result, is(equalTo("mainsub")));
     }
 
-#Conclusion
+# Conclusion
+
 Using CDI and JCommander with complex commands in a Java SE environment is quite simple. Using the CDI natural plugin API (`Instance`) is also very simple. Together this is a strong duo to simplify the development of Java command line tools.
