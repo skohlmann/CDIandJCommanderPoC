@@ -1,4 +1,4 @@
-#JCommander with CDI over Weld SE
+# JCommander with CDI over Weld SE
 
 A proof of concept to use the incredible [JCommander](http://jcommander.org/) API from Cédric Beust together with CDI in a Java SE environment.
 
