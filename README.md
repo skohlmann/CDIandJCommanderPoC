@@ -1,4 +1,5 @@
 #JCommander with CDI over Weld SE
+
 A proof of concept to use the incredible [JCommander](http://jcommander.org/) API from Cédric Beust together with CDI in a Java SE environment.
 
 The goal was to use the commands API with the [`@Parameters`](http://jcommander.org/apidocs/com/beust/jcommander/Parameters.html) annotation together with CDIs natural plugin API [`Instance`](http://docs.oracle.com/javaee/6/api/javax/enterprise/inject/Instance.html).
